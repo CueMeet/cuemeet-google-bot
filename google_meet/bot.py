@@ -38,7 +38,8 @@ class JoinGoogleMeet:
         self.recording_process = None
         self.presigned_url_combined = presigned_url_combined
         self.presigned_url_audio = presigned_url_audio
-        self.output_file = f"out/{str(uuid.uuid4())}"
+        self.id = str(uuid.uuid4())
+        self.output_file = f"out/{self.id}"
         self.event_start_time = None
         self.need_retry = False
         self.thread_start_time = None
@@ -62,7 +63,7 @@ class JoinGoogleMeet:
         options.add_argument('--disable-dev-shm-usage')
         options.add_argument('--disable-blink-features=AutomationControlled')
         options.add_argument("--use-fake-ui-for-media-stream")
-        options.add_argument("user-data-dir=CueMeet")
+        options.add_argument(f"user-data-dir=CueMeet{self.id}")
 
         options.add_argument("--use-fake-ui-for-media-stream")
         options.add_argument("--use-fake-device-for-media-stream")
@@ -302,10 +303,14 @@ class JoinGoogleMeet:
             command = [
                 "ffmpeg",
                 "-f", "pulse",
-                "-i", "default",
+                "-i", "virtual-sink.monitor",
+                "-af", "aresample=async=1000",  # Help with audio synchronization
                 "-acodec", "libopus",
-                "-b:a", "128k",
-                "-ac", "2",  
+                "-application", "audio",  # Optimize for audio quality
+                "-b:a", "192k",  # Higher bitrate for better quality
+                "-vbr", "on",  # Variable bitrate for better quality/size balance
+                "-frame_duration", "60",  # Longer frames for more stable encoding
+                "-ac", "2",
                 "-ar", "48000",
                 output_audio_file
             ]
@@ -313,6 +318,8 @@ class JoinGoogleMeet:
             self.logger.error("Unsupported operating system for recording.")
             self.end_session()
         try:
+            self.logger.info(f"Executing FFmpeg command: {' '.join(command)}")
+            
             self.event_start_time = datetime.now(timezone.utc)
             self.recording_process = subprocess.Popen(command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             self.recording_started = True

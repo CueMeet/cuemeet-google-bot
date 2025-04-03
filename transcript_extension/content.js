@@ -151,14 +151,14 @@ function meetingRoutines(uiType) {
                     transcript.push({
                       personName: userName,
                       timeStamp: timeStamp,
-                      transcriptText: message
+                      personTranscript: message
                     });
                     currentSpeaker = userName;
                   } else {
                     const lastEntry = transcript[transcript.length - 1];
                     if (lastEntry && lastEntry.personName === userName) {
                       lastEntry.timeStamp = timeStamp;
-                      lastEntry.transcriptText = message;
+                      lastEntry.personTranscript = message;
                     }
                   }
                   
@@ -357,4 +357,3 @@ function updateMeetingTitle() {
     console.error(error)
   }
 }
-
