@@ -295,7 +295,7 @@ class JoinGoogleMeet:
                 "-i", ":0",
                 "-acodec", "libopus",
                 "-b:a", "128k",
-                "-ac", "2",  
+                "-ac", "1",  
                 "-ar", "48000",
                 output_audio_file
             ]
@@ -307,10 +307,10 @@ class JoinGoogleMeet:
                 "-af", "aresample=async=1000",  # Help with audio synchronization
                 "-acodec", "libopus",
                 "-application", "audio",  # Optimize for audio quality
-                "-b:a", "192k",  # Higher bitrate for better quality
+                "-b:a", "256k",  # Higher bitrate for better quality
                 "-vbr", "on",  # Variable bitrate for better quality/size balance
                 "-frame_duration", "60",  # Longer frames for more stable encoding
-                "-ac", "2",
+                "-ac", "1",
                 "-ar", "48000",
                 output_audio_file
             ]
